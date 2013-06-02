@@ -2,5 +2,5 @@
 quantify
 ========
 
-Javaagent for profiling java applications.
+Javaagent and viewer for profiling java applications.
 
