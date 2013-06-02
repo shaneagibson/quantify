@@ -1,0 +1,7 @@
+uk/co/epsilontechnologies/quantify/JmxNotifier.class
+uk/co/epsilontechnologies/quantify/Notifier.class
+uk/co/epsilontechnologies/quantify/JmxNotifier$1.class
+uk/co/epsilontechnologies/quantify/Instrumentation.class
+uk/co/epsilontechnologies/quantify/ClassAdapter.class
+uk/co/epsilontechnologies/quantify/QuantifyTransformer.class
+uk/co/epsilontechnologies/quantify/QuantifyInstrumentation.class
