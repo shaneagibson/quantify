@@ -11,7 +11,7 @@
             font: 10pt arial;
         }
         .timeline-event-content {
-            font: 8pt arial;
+            font: 7pt arial;
             padding-right: 300px;
         }
     </style>
@@ -34,7 +34,7 @@
                         data.push({
                             'start' : this.startNanos / 1000000,
                             'end' : this.endNanos / 1000000,
-                            'content' : "[" + this.threadName + "] " + this.className + "." + (this.methodName).replace(/<|>/ig,function(m){return '&'+(m=='>'?'g':'l')+'t;';})
+                            'content' : "[" + this.threadName + "]<br/>" + this.className + "." + escape(this.methodName) + "<br/>" + Math.floor(((this.endNanos - this.startNanos) / 1000000)) + " ms"
                         });
                     });
 
@@ -50,10 +50,13 @@
 
                     visualization.draw(data, options);
 
-
                 }
             });
 
+        }
+
+        function escape(s) {
+            return s.replace(/<|>/ig,function(m){return '&'+(m=='>'?'g':'l')+'t;';})
         }
 
     </script>

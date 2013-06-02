@@ -49,7 +49,7 @@ public class JmxNotifier implements Notifier {
         this.executorService.execute(new Runnable() {
             @Override
             public void run() {
-            quantifyMBean.quantify(className, methodName, threadName, start, end);
+                quantifyMBean.quantify(className, methodName, threadName, start, end);
             }
         });
     }
