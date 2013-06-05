@@ -13,8 +13,8 @@ import java.util.concurrent.Executors;
 
 public class JmxNotifier implements Notifier {
 
-    private static final String JMX_HOST_PROPERTY = "jmx.host";
-    private static final String JMX_PORT_PROPERTY = "jmx.port";
+    private static final String JMX_HOST_PROPERTY = "quantify.jmx.host";
+    private static final String JMX_PORT_PROPERTY = "quantify.jmx.port";
 
     private static final String DEFAULT_JMX_HOST = "localhost";
     private static final int DEFAULT_JMX_PORT = 1099;
@@ -41,6 +41,7 @@ public class JmxNotifier implements Notifier {
     }
 
     public void notify(
+            final String javaagentRef,
             final String className,
             final String methodName,
             final String threadName,
@@ -49,7 +50,7 @@ public class JmxNotifier implements Notifier {
         this.executorService.execute(new Runnable() {
             @Override
             public void run() {
-                quantifyMBean.quantify(className, methodName, threadName, start, end);
+                quantifyMBean.quantify(javaagentRef, className, methodName, threadName, start, end);
             }
         });
     }

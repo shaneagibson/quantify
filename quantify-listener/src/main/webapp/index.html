@@ -34,7 +34,7 @@
                         data.push({
                             'start' : this.startNanos / 1000000,
                             'end' : this.endNanos / 1000000,
-                            'content' : "[" + this.threadName + "]<br/>" + this.className + "." + escape(this.methodName) + "<br/>" + Math.floor(((this.endNanos - this.startNanos) / 1000000)) + " ms"
+                            'content' : "JavaAgent: " + this.javaagentRef + "<br/>Thread: " + this.threadName + "<br/>" + this.className + "." + escape(this.methodName) + "<br/>" + Math.floor(((this.endNanos - this.startNanos) / 1000000)) + " ms"
                         });
                     });
 
@@ -50,6 +50,9 @@
 
                     visualization.draw(data, options);
 
+                },
+                error: function() {
+                    $('.timeline').innerHTML('Unable to retrieve method invocations.');
                 }
             });
 

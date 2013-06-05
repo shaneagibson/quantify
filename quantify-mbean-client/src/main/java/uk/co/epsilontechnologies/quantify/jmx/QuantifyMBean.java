@@ -5,6 +5,7 @@ public interface QuantifyMBean {
     public static final String MBEAN_NAME = "uk.co.epsilontechnologies.quantify.jmx:type=quantify";
 
     void quantify(
+            final String javaagentRef,
             final String className,
             final String methodName,
             final String threadName,

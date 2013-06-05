@@ -7,6 +7,7 @@ import org.objectweb.asm.tree.*;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 
 public class QuantifyInstrumentation implements Opcodes, Instrumentation {
 
@@ -17,10 +18,18 @@ public class QuantifyInstrumentation implements Opcodes, Instrumentation {
             "org/omg",
             "sun/rmi",
             "sun/reflect",
-            "org/slf4j",
-            "org/apache/log4j",
             "uk/co/epsilontechnologies/quantify"
     );
+
+    private static final int START_TIME_LOCAL_VAR = 1;
+    private static final int END_TIME_LOCAL_VAR = 3;
+    private static final int THREAD_NAME_STACK_VAR = 0;
+
+    private final UUID uuid;
+
+    public QuantifyInstrumentation(final UUID uuid) {
+        this.uuid = uuid;
+    }
 
     @Override
     public boolean apply(final ClassNode classNode, final MethodNode methodNode) {
@@ -41,22 +50,20 @@ public class QuantifyInstrumentation implements Opcodes, Instrumentation {
     }
 
     @Override
-    public void instrument(
-            final ClassNode classNode,
-            final MethodNode methodNode) {
+    public void instrument(final ClassNode classNode, final MethodNode methodNode) {
 
         final String className = classNode.name;
         final String methodName = resolveMethodSignature(methodNode);
 
         final InsnList beginList = createList(
                         new MethodInsnNode(INVOKESTATIC, "java/lang/System", "nanoTime", "()J"),
-                        new VarInsnNode(LSTORE, methodNode.maxLocals + 1));
+                        new VarInsnNode(LSTORE, methodNode.maxLocals + START_TIME_LOCAL_VAR));
 
         final Iterator<AbstractInsnNode> insnNodes = (Iterator<AbstractInsnNode>) methodNode.instructions.iterator();
 
         methodNode.instructions.insert(beginList);
 
-        while (insnNodes.hasNext()){
+        while (insnNodes.hasNext()) {
 
             final AbstractInsnNode insn = insnNodes.next();
 
@@ -69,17 +76,18 @@ public class QuantifyInstrumentation implements Opcodes, Instrumentation {
                 final InsnList endList =
                         createList(
                                 new MethodInsnNode(INVOKESTATIC, "java/lang/System", "nanoTime", "()J"),
-                                new VarInsnNode(LSTORE, methodNode.maxLocals + 3),
+                                new VarInsnNode(LSTORE, methodNode.maxLocals + END_TIME_LOCAL_VAR),
                                 new MethodInsnNode(INVOKESTATIC, "java/lang/Thread", "currentThread", "()Ljava/lang/Thread;"),
                                 new MethodInsnNode(INVOKEVIRTUAL, "java/lang/Thread", "getName", "()Ljava/lang/String;"),
-                                new VarInsnNode(ASTORE, 0),
+                                new VarInsnNode(ASTORE, THREAD_NAME_STACK_VAR),
                                 new FieldInsnNode(GETSTATIC, "uk/co/epsilontechnologies/quantify/JmxNotifier", "instance", "Luk/co/epsilontechnologies/quantify/JmxNotifier;"),
+                                new LdcInsnNode(uuid.toString()),
                                 new LdcInsnNode(className),
                                 new LdcInsnNode(methodName),
-                                new VarInsnNode(ALOAD, 0),
-                                new VarInsnNode(LLOAD, methodNode.maxLocals + 1),
-                                new VarInsnNode(LLOAD, methodNode.maxLocals + 3),
-                                new MethodInsnNode(INVOKEVIRTUAL, "uk/co/epsilontechnologies/quantify/JmxNotifier", "notify", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;JJ)V"));
+                                new VarInsnNode(ALOAD, THREAD_NAME_STACK_VAR),
+                                new VarInsnNode(LLOAD, methodNode.maxLocals + START_TIME_LOCAL_VAR),
+                                new VarInsnNode(LLOAD, methodNode.maxLocals + END_TIME_LOCAL_VAR),
+                                new MethodInsnNode(INVOKEVIRTUAL, "uk/co/epsilontechnologies/quantify/JmxNotifier", "notify", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;JJ)V"));
 
                 methodNode.instructions.insertBefore(insn, endList);
             }

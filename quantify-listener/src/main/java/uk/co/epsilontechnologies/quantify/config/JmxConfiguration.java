@@ -15,8 +15,8 @@ public class JmxConfiguration {
     private static final int DEFAULT_JMX_PORT = 1099;
     private static final String DEFAULT_JMX_HOST = "localhost";
 
-    private static final String JMX_PORT_PROPERTY = "jmx.port";
-    private static final String JMX_HOST_PROPERTY = "jmx.host";
+    private static final String JMX_PORT_PROPERTY = "quantify.jmx.port";
+    private static final String JMX_HOST_PROPERTY = "quantify.jmx.host";
 
     public static int resolveJmxPort() {
         return System.getProperty(JMX_PORT_PROPERTY) != null ? Integer.parseInt(System.getProperty(JMX_PORT_PROPERTY)) : DEFAULT_JMX_PORT;

@@ -21,6 +21,7 @@ public class Quantify implements QuantifyMBean {
     @Override
     @ManagedOperation
     public void quantify(
+            final String javaagentRef,
             final String className,
             final String methodName,
             final String threadName,
@@ -28,6 +29,7 @@ public class Quantify implements QuantifyMBean {
             final Long end) {
         this.notificationRecorder.record(
                 new MethodInvocation(
+                        javaagentRef,
                         className,
                         methodName,
                         threadName,
